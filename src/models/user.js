@@ -24,11 +24,9 @@ const UserSchema = new mongoose.Schema({
   },
   StudentCareer: {
     type: String,
-    required: true,
   },
   StudentSemester: {
     type: Number,
-    required: true,
   },
   StudentHours: {
     type: Number,
@@ -85,10 +83,6 @@ class UserRepo {
     if (!StudentPassword) {
       console.error('La contraseña es requerida');
       throw new Error('La contraseña es requerida');
-    }
-    if (!StudentSemester) {
-      console.error('El semestre es requerido');
-      throw new Error('El semestre es requerido');
     }
     if (StudentPassword.length < 8) {
       console.error('La contraseña debe tener al menos 8 caracteres');

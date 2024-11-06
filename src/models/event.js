@@ -132,6 +132,12 @@ class EventRepo {
     // Buscar el evento por ID
     const event = await EventModel.findOne({ _id: EventID });
 
+    // Si el evento está activo, mandar error
+    if (event.IsActive) {
+      console.error('El evento está activo');
+      throw new Error('El evento está activo');
+    }
+
     // Eliminar la imagen
     if (event && event.Image) {
       fs.unlink(event.Image, (err) => {
@@ -192,7 +198,7 @@ class EventRepo {
 
     return updateEvent;
   }
-  // Registrar asistencia a un evento
+  // Registrar asistencia a un evento {BORRAR}
   static async register({ StudentID }) {
     //Buscar el evento activo
     const activeEvent = await findActive();
@@ -255,8 +261,7 @@ class EventRepo {
 
     return event;
   }
-
-  //Registrar asistencia a un evento por QR
+  // Registrar asistencia a un evento por QR
   static async registerattendancebyqr({ EventID, StudentID }) {
     //Buscar el evento por ID
     const event = await Event.findOne({ _id: EventID });
@@ -293,6 +298,51 @@ class EventRepo {
     });
 
     return event;
+  }
+  // Filtrar eventos por fecha
+  static async filterByDate({ date }) {
+    const EventModel = mongoose.model('Event', EventSchema);
+
+    //Buscar los eventos por fecha
+    const startDate = new Date(date);
+    const endDate = new Date(date);
+    endDate.setDate(endDate.getDate() + 1);
+
+    const events = await EventModel.find({
+      DateandHour: {
+        $gte: startDate,
+        $lt: endDate,
+      },
+    });
+
+    return events;
+  }
+  // Obtener los alumnos que asistieron a un evento
+  static async getAssistance({ EventID }) {
+    const EventModel = mongoose.model('Event', EventSchema);
+    const event = await EventModel.findOne({ _id: EventID }).populate(
+      'Assistance'
+    );
+    return event.Assistance;
+  }
+  // Generar excel de asistencia
+  static async generateExcel({ EventID }) {
+    const EventModel = mongoose.model('Event', EventSchema);
+    const event = await EventModel.findOne({ _id: EventID }).populate(
+      'Assistance'
+    );
+    const students = event.Assistance;
+    const fields = ['StudentID', 'StudentName', 'StudentLastName'];
+    const opts = { fields };
+    const json2csv = require('json2csv').parse;
+    const csv = json2csv(students, opts);
+    fs.writeFile(`public/excel/excel_${EventID}.csv`, csv, (err) => {
+      if (err) {
+        console.error(err);
+      }
+    });
+
+    return csv;
   }
 }
 // Solapamiento de eventos

@@ -15,7 +15,10 @@ const getEvent = async (req, res) => {
     const event = await EventRepo.findOne({ EventID });
     res.json(event);
   } catch (error) {
-    res.json('Error al encontrar el evento', error.message);
+    res.status(500).json({
+      message: 'Error al obtener evento',
+      error: error.message,
+    });
   }
 };
 
@@ -32,9 +35,15 @@ const createEvent = async (req, res) => {
       Place,
       Image,
     });
-    res.json('Evento creado exitosamente');
+    res.status(200).json({
+      message: 'Evento creado exitosamente',
+      error: error.message,
+    });
   } catch (error) {
-    res.json(error.message);
+    res.status(500).json({
+      message: 'Error al crear un evento',
+      error: error.message,
+    });
   }
 };
 
@@ -44,7 +53,10 @@ const getEvents = async (req, res) => {
     const events = await EventRepo.find();
     res.json(events);
   } catch (error) {
-    res.json('Error al encontrar los eventos', error.message);
+    res.status(500).json({
+      message: 'Error al obtener eventos',
+      error: error.message,
+    });
   }
 };
 
@@ -63,7 +75,7 @@ const updateEvent = async (req, res) => {
     });
     res.json('Evento actualizado');
   } catch (error) {
-    res.json({
+    res.status(500).json({
       message: 'Error al actualizar el evento',
       error: error.message,
     });
@@ -73,25 +85,28 @@ const updateEvent = async (req, res) => {
 //Controlador para eliminar un evento
 const deleteEvent = async (req, res) => {
   const { EventID } = req.params;
-
-  //Elimina el evento
   try {
     await EventRepo.delete({ EventID });
     res.json('Evento eliminado exitosamente');
   } catch (error) {
-    res.json('Error al eliminar el evento', error.message);
+    res.status(500).json({
+      message: 'Error al eliminar el evento',
+      error: error.message,
+    });
   }
 };
 
-//Controlador para obtener el evento activo
+//Controlador para obtener el evento activo {Borrar}
 const registerattendance = async (req, res) => {
   const { StudentID } = req.params;
-
   try {
     const activeEvent = await EventRepo.register({ StudentID });
     res.json(activeEvent);
   } catch (error) {
-    res.json('Error al registrarte al evento', error.message);
+    res.status(500).json({
+      message: 'Error al registrar la asistencia',
+      error: error.message,
+    });
   }
 };
 
@@ -103,7 +118,10 @@ const addNotificationList = async (req, res) => {
     await EventRepo.addNotificationList({ EventID, StudentID });
     res.json('Usuario agregado a la lista de notificaciones');
   } catch (error) {
-    res.json('Error al enviar la notificación', error.message);
+    res.status(500).json({
+      message: 'Error al registrar la asistencia',
+      error: error.message,
+    });
   }
 };
 
@@ -356,7 +374,7 @@ const generateCertificate = async (req, res) => {
     const pdfPath = path.join(
       __dirname,
       '../../public/PDF',
-      `certificado_${event.Title}_${user.StudentName}.pdf`
+      `certificado_${event.EventID}_${user.StudentID}.pdf`
     );
 
     if (fs.existsSync(pdfPath)) {
@@ -377,7 +395,10 @@ const generateCertificate = async (req, res) => {
     // Finalizar el PDF
     certificate.end();
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: 'Error al registrar la asistencia',
+      error: error.message,
+    });
   }
 };
 
@@ -389,8 +410,52 @@ const registerattendancebyqr = async (req, res) => {
     await EventRepo.registerattendancebyqr({ StudentID, EventID });
     res.status(200).json('Asistencia registrada');
   } catch (error) {
-    res.status(400).json({
+    res.status(500).json({
       message: 'Error al registrar la asistencia',
+      error: error.message,
+    });
+  }
+};
+
+// Filtro eventos por fecha
+const filterEventsByDate = async (req, res) => {
+  const { date } = req.body;
+  try {
+    const events = await EventRepo.filterByDate({ date });
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error al obtener eventos',
+      error: error.message,
+    });
+  }
+};
+
+// Obtener asistencia de un evento
+const getAssistance = async (req, res) => {
+  const { EventID } = req.body;
+
+  try {
+    const assistance = await EventRepo.getAssistance({ EventID });
+    res.json(assistance);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error al obtener las asistencia',
+      error: error.message,
+    });
+  }
+};
+
+// Generar excel de asistencia
+const generateExcel = async (req, res) => {
+  const { EventID } = req.body;
+
+  try {
+    const assistance = await EventRepo.generateExcel({ EventID });
+    res.json(assistance);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error al obtener las asistencia',
       error: error.message,
     });
   }
@@ -406,4 +471,7 @@ module.exports = {
   addNotificationList,
   generateCertificate,
   registerattendancebyqr,
+  filterEventsByDate,
+  getAssistance,
+  generateExcel,
 };
