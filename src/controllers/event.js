@@ -374,7 +374,7 @@ const generateCertificate = async (req, res) => {
     const pdfPath = path.join(
       __dirname,
       '../../public/PDF',
-      `certificado_${event.EventID}_${user.StudentID}.pdf`
+      `certificado_${event._id}_${user.StudentID}.pdf`
     );
 
     if (fs.existsSync(pdfPath)) {

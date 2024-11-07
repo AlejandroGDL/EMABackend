@@ -291,11 +291,16 @@ class EventRepo {
     user.AssistedEvents.push(event._id);
     await user.save();
 
-    UserRepo.sendNotification({
-      StudentID,
-      Title: '¡Felicidades! Asistencia registrada',
-      Body: `Has asistido al evento ${event.Title}`,
-    });
+    try {
+      UserRepo.sendNotification({
+        StudentID,
+        Title: '¡Felicidades! Asistencia registrada',
+        Body: `Has asistido al evento ${event.Title}`,
+      });
+    } catch (error) {
+      console.error('Error al enviar la notificación:');
+      throw new Error('Error al enviar la notificación');
+    }
 
     return event;
   }

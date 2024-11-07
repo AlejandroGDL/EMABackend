@@ -46,7 +46,10 @@ const getUser = async (req, res) => {
 
     res.json(user);
   } catch (error) {
-    res.json('Error al encontrar el estudiante', error.message);
+    res.status(500).json({
+      message: 'Error al encontrar al usuario',
+      error: error.message,
+    });
   }
 };
 

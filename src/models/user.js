@@ -8,14 +8,13 @@ const UserSchema = new mongoose.Schema({
   StudentName: {
     type: String,
     required: true,
-    unique: true,
   },
   StudentLastName: {
     type: String,
     required: true,
   },
   StudentID: {
-    type: Number,
+    type: String,
     required: true,
   },
   StudentPassword: {
@@ -24,9 +23,11 @@ const UserSchema = new mongoose.Schema({
   },
   StudentCareer: {
     type: String,
+    default: null,
   },
   StudentSemester: {
     type: Number,
+    default: 0,
   },
   StudentHours: {
     type: Number,
@@ -39,6 +40,7 @@ const UserSchema = new mongoose.Schema({
   },
   ExpoPushToken: {
     type: String,
+    default: null,
   },
   IsPasswordChanged: {
     type: Boolean,
@@ -88,14 +90,10 @@ class UserRepo {
       console.error('La contraseña debe tener al menos 8 caracteres');
       throw new Error('La contraseña debe tener al menos 8 caracteres');
     }
-    if (typeof StudentID !== 'number') {
-      console.error('El ID debe ser un número');
-      throw new Error('El ID debe ser un número');
-    }
-    if (typeof StudentSemester !== 'number') {
-      console.error('El semestre debe ser un número');
-      throw new Error('El semestre debe ser un número');
-    }
+    // if (typeof StudentSemester !== 'number') {
+    //   console.error('El semestre debe ser un número');
+    //   throw new Error('El semestre debe ser un número');
+    // }
     if (typeof StudentHours !== 'number') {
       console.error('Las horas deben ser un número');
       throw new Error('Las horas deben ser un número');
@@ -104,8 +102,7 @@ class UserRepo {
     if (
       typeof StudentName !== 'string' ||
       typeof StudentLastName !== 'string' ||
-      typeof StudentPassword !== 'string' ||
-      typeof StudentCareer !== 'string'
+      typeof StudentPassword !== 'string'
     ) {
       console.error(
         'El Nombre, Apellidos y Contraseña deben ser de tipo string'

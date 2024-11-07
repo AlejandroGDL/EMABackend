@@ -29,7 +29,6 @@ router.post('/registereventbyqr', eventController.registerattendancebyqr);
 router.post('/registerlistnotify', eventController.addNotificationList);
 //Generar certificado
 router.post('/generatecertificate', eventController.generateCertificate);
-
 //Filtrar eventos por fecha
 router.post('/filterevents', eventController.filterEventsByDate);
 //Obtener asistencia a eventos
